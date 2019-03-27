@@ -1,6 +1,7 @@
 package br.senai.sc;
 
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +14,20 @@ import br.senai.sc.domain.Cidade;
 import br.senai.sc.domain.Cliente;
 import br.senai.sc.domain.Endereco;
 import br.senai.sc.domain.Estado;
+import br.senai.sc.domain.ItemPedido;
+import br.senai.sc.domain.PagamentoComCartao;
+import br.senai.sc.domain.Pedido;
 import br.senai.sc.domain.Produto;
+import br.senai.sc.domain.enums.EstadoPagamento;
 import br.senai.sc.domain.enums.TipoCliente;
 import br.senai.sc.repositories.CategoriaRepository;
 import br.senai.sc.repositories.CidadeRepository;
 import br.senai.sc.repositories.ClienteRepository;
 import br.senai.sc.repositories.EnderecoRepository;
 import br.senai.sc.repositories.EstadoRepository;
+import br.senai.sc.repositories.ItemPedidoRepository;
+import br.senai.sc.repositories.PagamentoRepository;
+import br.senai.sc.repositories.PedidoRepository;
 import br.senai.sc.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -47,6 +55,15 @@ public class ProjetoPedidoApplication implements CommandLineRunner {
 
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	@Autowired
+	private ItemPedidoRepository itemPedidoRepository;
+	
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -108,6 +125,23 @@ public class ProjetoPedidoApplication implements CommandLineRunner {
 		enderecoRepository.save(e1);
 		enderecoRepository.save(e2);
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		Pedido ped1 = new Pedido(null, 
+				sdf.parse("30/09/2017 10:32"), 
+				cli1, 
+				e1);
+		
+		PagamentoComCartao pag1 = new PagamentoComCartao(null,
+				EstadoPagamento.PENDENTE, 
+				ped1, 6);
+		ped1.setPagamento(pag1);
+		
+		ItemPedido item1 = new ItemPedido(ped1, p1, 0.0, 1, 1000.0);
+	
+		pedidoRepository.save(ped1);
+		itemPedidoRepository.save(item1);
+		pagamentoRepository.save(pag1);
 	}
 	
 	
